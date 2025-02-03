@@ -1,0 +1,6 @@
+@ExerciseTracker.athallie_HostAddress = http://localhost:5292
+
+GET {{ExerciseTracker.athallie_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
