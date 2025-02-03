@@ -25,11 +25,6 @@ namespace ExerciseTracker.athallie.Repositories
             }
         }
 
-        public Task DeleteAsync(TEntity entity)
-        {
-            throw new NotImplementedException();
-        }
-
         public IQueryable<TEntity> GetAll()
         {
             try
