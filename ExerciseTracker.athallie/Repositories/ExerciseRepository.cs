@@ -1,11 +1,12 @@
 ﻿using ExerciseTracker.athallie.Model;
+using ExerciseTracker.athallie.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace ExerciseTracker.athallie.Repositories
 {
     public class ExerciseRepository : Repository<Exercise>, IExerciseRepository
     {
-        public ExerciseRepository(Context<Exercise> context) : base(context)
+        public ExerciseRepository(ExerciseTrackerContext context) : base(context)
         {
         }
 
@@ -13,7 +14,7 @@ namespace ExerciseTracker.athallie.Repositories
         {
             try
             {
-                return await Context.Data.Where(e => e.Duration == duration).ToListAsync();
+                return await Context.Exercises.Where(e => e.Duration == duration).ToListAsync();
             } catch(Exception ex) 
             {
                 throw new Exception($"Error: {ex.Message}");
@@ -24,7 +25,7 @@ namespace ExerciseTracker.athallie.Repositories
         {
             try
             {
-                return await Context.Data.Where(e => e.DateEnd == endDate).ToListAsync();
+                return await Context.Exercises.Where(e => e.DateEnd == endDate).ToListAsync();
             }
             catch(Exception ex)
             {
@@ -36,7 +37,7 @@ namespace ExerciseTracker.athallie.Repositories
         {
             try
             {
-                return await Context.Data.FindAsync(id);
+                return await Context.Exercises.FindAsync(id);
             } catch(Exception ex)
             {
                 throw new Exception($"Error: {ex.Message}");
@@ -47,7 +48,7 @@ namespace ExerciseTracker.athallie.Repositories
         {
             try
             {
-                return await Context.Data.Where(e => e.DateStart == startDate).ToListAsync();
+                return await Context.Exercises.Where(e => e.DateStart == startDate).ToListAsync();
             } catch(Exception ex)
             {
                 throw new Exception($"Error: {ex.Message}");

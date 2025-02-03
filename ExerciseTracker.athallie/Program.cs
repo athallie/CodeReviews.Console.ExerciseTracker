@@ -1,10 +1,11 @@
 using ExerciseTracker.athallie.Model;
+using ExerciseTracker.athallie.Models;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddDbContext<Context<Exercise>>(
+builder.Services.AddDbContext<ExerciseTrackerContext>(
     options => options.UseSqlServer(builder.Configuration.GetConnectionString("Default"))
 );
 builder.Services.AddControllers();

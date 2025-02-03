@@ -1,13 +1,14 @@
 ﻿
 using ExerciseTracker.athallie.Model;
+using ExerciseTracker.athallie.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace ExerciseTracker.athallie.Repositories
 {
     public class Repository<TEntity> : IRepository<TEntity> where TEntity : class, new()
     {
-        protected readonly Context<TEntity> Context;
-        public Repository(Context<TEntity> context)
+        protected readonly ExerciseTrackerContext Context;
+        public Repository(ExerciseTrackerContext context)
         {
             Context = context;
         }
@@ -29,7 +30,7 @@ namespace ExerciseTracker.athallie.Repositories
         {
             try
             {
-                return Context.Data;
+                return Context.Set<TEntity>();
             }
             catch (Exception ex)
             {
