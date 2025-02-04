@@ -1,5 +1,7 @@
 using ExerciseTracker.athallie.Model;
 using ExerciseTracker.athallie.Models;
+using ExerciseTracker.athallie.Repositories;
+using ExerciseTracker.athallie.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -8,6 +10,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<ExerciseTrackerContext>(
     options => options.UseSqlServer(builder.Configuration.GetConnectionString("Default"))
 );
+builder.Services.AddScoped<IRepository<Exercise>, Repository<Exercise>>();
+builder.Services.AddScoped<IExerciseRepository, ExerciseRepository>();
+builder.Services.AddScoped<IExerciseService, ExerciseService>();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

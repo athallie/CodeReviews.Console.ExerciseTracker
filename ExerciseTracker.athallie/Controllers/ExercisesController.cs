@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ExerciseTracker.athallie.Model;
 using ExerciseTracker.athallie.Models;
+using ExerciseTracker.athallie.Services;
 
 namespace ExerciseTracker.athallie.Controllers
 {
@@ -14,25 +15,25 @@ namespace ExerciseTracker.athallie.Controllers
     [ApiController]
     public class ExercisesController : ControllerBase
     {
-        private readonly ExerciseTrackerContext _context;
+        private readonly IExerciseService _exerciseService;
 
-        public ExercisesController(ExerciseTrackerContext context)
+        public ExercisesController(IExerciseService exerciseService)
         {
-            _context = context;
+            _exerciseService = exerciseService;
         }
 
         // GET: api/Exercises
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Exercise>>> GetExercises()
         {
-            return await _context.Exercises.ToListAsync();
+            return await _exerciseService.GetAllExercises().ToListAsync();
         }
 
         // GET: api/Exercises/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Exercise>> GetExercise(int id)
         {
-            var exercise = await _context.Exercises.FindAsync(id);
+            var exercise = await _exerciseService.GetExerciseByIdAsync(id);
 
             if (exercise == null)
             {
@@ -52,15 +53,14 @@ namespace ExerciseTracker.athallie.Controllers
                 return BadRequest();
             }
 
-            _context.Entry(exercise).State = EntityState.Modified;
 
             try
             {
-                await _context.SaveChangesAsync();
+                await _exerciseService.UpdateExerciseAsync(exercise);
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!ExerciseExists(id))
+                if (!_exerciseService.ExerciseExists(id))
                 {
                     return NotFound();
                 }
@@ -78,9 +78,7 @@ namespace ExerciseTracker.athallie.Controllers
         [HttpPost]
         public async Task<ActionResult<Exercise>> PostExercise(Exercise exercise)
         {
-            _context.Exercises.Add(exercise);
-            await _context.SaveChangesAsync();
-
+            await _exerciseService.AddExerciseAsync(exercise);
             return CreatedAtAction("GetExercise", new { id = exercise.Id }, exercise);
         }
 
@@ -88,21 +86,14 @@ namespace ExerciseTracker.athallie.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteExercise(int id)
         {
-            var exercise = await _context.Exercises.FindAsync(id);
-            if (exercise == null)
+            if (!_exerciseService.ExerciseExists(id))
             {
                 return NotFound();
             }
 
-            _context.Exercises.Remove(exercise);
-            await _context.SaveChangesAsync();
+            await _exerciseService.DeleteExerciseAsync(id);
 
             return NoContent();
-        }
-
-        private bool ExerciseExists(int id)
-        {
-            return _context.Exercises.Any(e => e.Id == id);
         }
     }
 }

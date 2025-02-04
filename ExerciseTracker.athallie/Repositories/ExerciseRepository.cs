@@ -54,5 +54,18 @@ namespace ExerciseTracker.athallie.Repositories
                 throw new Exception($"Error: {ex.Message}");
             }
         }
+
+        public async Task<bool> DeleteExerciseById(int id)
+        {
+            try
+            {
+                await Context.Exercises.Where(e => e.Id == id).ExecuteDeleteAsync();
+            } catch (Exception ex)
+            {
+                throw new Exception($"Couldn't delete element: {ex.Message}");
+            }
+
+            return await Context.Exercises.FindAsync(id) == null ? true : false;
+        }
     }
 }

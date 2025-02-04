@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ExerciseTracker.athallie.Migrations
 {
     [DbContext(typeof(ExerciseTrackerContext))]
-    [Migration("20250203094838_Initial")]
+    [Migration("20250204074610_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -42,8 +42,8 @@ namespace ExerciseTracker.athallie.Migrations
                     b.Property<DateTime>("DateStart")
                         .HasColumnType("datetime2");
 
-                    b.Property<TimeSpan>("Duration")
-                        .HasColumnType("time");
+                    b.Property<long>("Duration")
+                        .HasColumnType("bigint");
 
                     b.HasKey("Id");
 

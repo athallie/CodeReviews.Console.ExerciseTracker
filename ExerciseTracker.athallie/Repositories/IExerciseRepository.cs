@@ -8,5 +8,6 @@ namespace ExerciseTracker.athallie.Repositories
         Task<List<Exercise>> GetExercisesByStartDate(DateTime startDate);
         Task<List<Exercise>> GetExercisesByEndDate(DateTime endDate);
         Task<List<Exercise>> GetExercisesByDuration(TimeSpan duration);
+        Task<bool> DeleteExerciseById(int id);
     }
 }

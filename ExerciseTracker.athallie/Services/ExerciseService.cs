@@ -45,5 +45,15 @@ namespace ExerciseTracker.athallie.Services
         {
             return await _exerciseRepository.UpdateAsync(exercise);
         }
+
+        public async Task<bool> DeleteExerciseAsync(int id)
+        {
+            return await _exerciseRepository.DeleteExerciseById(id);
+        }
+
+        public bool ExerciseExists(int id)
+        {
+            return _exerciseRepository.GetExerciseByIdAsync(id) == null ? false : true;
+        }
     }
 }

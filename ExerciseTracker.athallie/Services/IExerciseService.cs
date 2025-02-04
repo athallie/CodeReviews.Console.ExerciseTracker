@@ -11,5 +11,7 @@ namespace ExerciseTracker.athallie.Services
         Task<List<Exercise>> GetExercisesByDurationAsync(TimeSpan duration);
         Task<Exercise> AddExerciseAsync(Exercise exercise);
         Task<Exercise> UpdateExerciseAsync(Exercise exercise);
+        Task<bool> DeleteExerciseAsync(int id);
+        bool ExerciseExists(int id);
     }
 }
