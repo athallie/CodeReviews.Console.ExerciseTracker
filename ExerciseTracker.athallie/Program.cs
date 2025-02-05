@@ -50,7 +50,7 @@ Parallel.Invoke(
         }
         Console.WriteLine("\n");
         httpUtils.ApiEndpoint = $"{app.Urls.First()}/api/Exercises";
-        IConsoleUI ui = new ConsoleUI(httpUtils);
+        IConsoleUI ui = new ConsoleUI(httpUtils, new UserInput());
         ui.Run();
     }
 );

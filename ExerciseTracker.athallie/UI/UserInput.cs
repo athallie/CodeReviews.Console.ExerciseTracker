@@ -6,11 +6,17 @@ namespace ExerciseTracker.athallie.UI
     public class UserInput : IUserInput
     {
         public UserInput() { }
-        public string GetInput(string prompt, string columnName)
+        public string GetInput(string prompt, string columnName, DateTime? startDate = null)
         {
-            var input = AnsiConsole.Prompt(
-                new TextPrompt<string>(prompt)
-            );
+            string input;
+            while (true)
+            {
+                input = AnsiConsole.Prompt(
+                    new TextPrompt<string>(prompt)
+                );
+                var inputIsValid = ValidateInput(input, columnName, startDate);
+                if (inputIsValid) { break; }
+            }
             return input;
         }
 
@@ -26,7 +32,8 @@ namespace ExerciseTracker.athallie.UI
                     //Format: MM/dd/YYYY
                     if (startDate == null)
                     {
-                        throw new ArgumentNullException($"{nameof(startDate)} can't be null for {nameof(columnName)} column.");
+                        Console.WriteLine($"{nameof(startDate)} can't be null for {nameof(columnName)} column.");
+                        return false;
                     }
 
                     isValid = DateTime.TryParse(input, out DateTime dateEnd);
@@ -36,7 +43,8 @@ namespace ExerciseTracker.athallie.UI
                     }
                     else if (dateEnd < startDate)
                     {
-                        throw new ArgumentException($"End date cannot be less than start date.");
+                        Console.WriteLine($"End date cannot be less than start date.");
+                        return false;
                     }
                     else
                     {

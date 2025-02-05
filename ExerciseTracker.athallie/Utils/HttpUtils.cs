@@ -1,5 +1,6 @@
 ﻿using ExerciseTracker.athallie.Model;
 using System.Net.Http.Headers;
+using System.Text;
 using System.Text.Json;
 
 namespace ExerciseTracker.athallie.Utils
@@ -7,7 +8,7 @@ namespace ExerciseTracker.athallie.Utils
     public class HttpUtils
     {
         private readonly HttpClient _httpClient;
-        public string? ApiEndpoint {  get; set; }
+        public string? ApiEndpoint { get; set; }
         public HttpUtils(HttpClient httpClient) { _httpClient = httpClient; Setup(); }
         private void Setup()
         {
@@ -18,12 +19,39 @@ namespace ExerciseTracker.athallie.Utils
             _httpClient.DefaultRequestHeaders.Add("User-Agent", "Exercise Tracker App");
         }
         public async Task<IEnumerable<Exercise>> GetExercises()
-        { 
+        {
             if (ApiEndpoint != null)
             {
                 var stream = await _httpClient.GetStreamAsync(ApiEndpoint);
                 List<Exercise> data = await JsonSerializer.DeserializeAsync<List<Exercise>>(stream);
                 return data ?? new();
+            }
+
+            throw new Exception("API endpoint has not been set.");
+        }
+        public async Task<string> AddExercise(DateTime dateStart, DateTime dateEnd, TimeSpan duration, string? comments)
+        {
+            if (ApiEndpoint != null)
+            {
+                using StringContent jsonContent = new(
+                    JsonSerializer.Serialize(new Exercise
+                    {
+                        DateStart = dateStart,
+                        DateEnd = dateEnd,
+                        Duration = duration,
+                        Comments = comments
+                    }),
+                    Encoding.UTF8,
+                    "application/json"
+                );
+
+                using HttpResponseMessage response = await
+                    _httpClient.PostAsync(ApiEndpoint, jsonContent);
+
+                //response.EnsureSuccessStatusCode();
+
+                var jsonResponse = await response.Content.ReadAsStringAsync();
+                return jsonResponse;
             }
 
             throw new Exception("API endpoint has not been set.");
