@@ -1,9 +1,13 @@
+using System.Diagnostics;
 using ExerciseTracker.athallie.Model;
 using ExerciseTracker.athallie.Models;
 using ExerciseTracker.athallie.Repositories;
 using ExerciseTracker.athallie.Services;
+using ExerciseTracker.athallie.UI;
+using ExerciseTracker.athallie.Utils;
 using Microsoft.EntityFrameworkCore;
 
+ /*API Setup*/
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -32,4 +36,21 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-app.Run();
+/*UI Setup*/
+HttpClient httpClient = new HttpClient();
+HttpUtils httpUtils = new HttpUtils(httpClient);
+
+Parallel.Invoke(
+    () => app.Run(),
+    () =>
+    {
+        while(app.Urls.Count <= 0)
+        {
+            Thread.Sleep(1000);
+        }
+        Console.WriteLine("\n");
+        httpUtils.ApiEndpoint = $"{app.Urls.First()}/api/Exercises";
+        IConsoleUI ui = new ConsoleUI(httpUtils);
+        ui.Run();
+    }
+);
