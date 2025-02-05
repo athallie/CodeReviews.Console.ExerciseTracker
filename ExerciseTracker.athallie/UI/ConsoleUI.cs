@@ -1,6 +1,7 @@
 ﻿using ExerciseTracker.athallie.Model;
 using ExerciseTracker.athallie.Utils;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.Blazor;
 using Spectre.Console;
 
 namespace ExerciseTracker.athallie.UI
@@ -50,6 +51,7 @@ namespace ExerciseTracker.athallie.UI
                 case "edit":
                     break;
                 case "delete":
+                    Delete();
                     break;
             }
         }
@@ -130,6 +132,13 @@ namespace ExerciseTracker.athallie.UI
                 data[3]
             );
 
+            Console.WriteLine("\n" + response);
+        }
+
+        private async void Delete()
+        {
+            int id = _userInput.GetIDInput();
+            var response = await _httpUtils.DeleteExercise(id);
             Console.WriteLine("\n" + response);
         }
     }

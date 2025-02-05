@@ -48,13 +48,18 @@ namespace ExerciseTracker.athallie.Utils
                 using HttpResponseMessage response = await
                     _httpClient.PostAsync(ApiEndpoint, jsonContent);
 
-                //response.EnsureSuccessStatusCode();
-
                 var jsonResponse = await response.Content.ReadAsStringAsync();
                 return jsonResponse;
             }
 
             throw new Exception("API endpoint has not been set.");
+        }
+
+        public async Task<string> DeleteExercise(int id)
+        {
+            using HttpResponseMessage response = await _httpClient.DeleteAsync($"{ApiEndpoint}/{id}");
+            string jsonResponse = await response.Content.ReadAsStringAsync();
+            return jsonResponse;
         }
     }
 }

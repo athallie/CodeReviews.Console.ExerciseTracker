@@ -11,16 +11,46 @@ namespace ExerciseTracker.athallie.UI
             string input;
             while (true)
             {
-                input = AnsiConsole.Prompt(
-                    new TextPrompt<string>(prompt)
-                );
+                input = GetInput(prompt);
                 var inputIsValid = ValidateInput(input, columnName, startDate);
                 if (inputIsValid) { break; }
             }
             return input;
         }
 
-        public bool ValidateInput(string input, string columnName, DateTime? startDate = null)
+        public int GetIDInput()
+        {
+            string input;
+            while (true)
+            {
+                input = GetInput("ID of Item To Be Deleted:");
+                var inputIsValid = ValidateInput(input);
+                if (inputIsValid) { break; }
+            }
+            return Int32.Parse(input);
+        }
+            
+        private string GetInput(string prompt)
+        {
+            return AnsiConsole.Prompt(
+                    new TextPrompt<string>(prompt)
+            );
+        }
+        
+        //Validate ID (for deletion)
+        private bool ValidateInput(string id)
+        {
+            if (Int32.TryParse(id, out var itemId))
+            {
+                return true;
+            } else
+            {
+                return false;
+            }
+        }
+
+        //Validate Input for Addition based on Exercise class
+        private bool ValidateInput(string input, string columnName, DateTime? startDate = null)
         {
             switch (columnName.ToLower())
             {
