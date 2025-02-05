@@ -61,5 +61,20 @@ namespace ExerciseTracker.athallie.Utils
             string jsonResponse = await response.Content.ReadAsStringAsync();
             return jsonResponse;
         }
+
+        public async Task<Exercise?> UpdateExercise(int id, Exercise exercise)
+        {
+            using StringContent jsonContent = new(
+                JsonSerializer.Serialize(exercise),
+                Encoding.UTF8,
+                "application/json"
+            );
+            using HttpResponseMessage response = await _httpClient.PutAsync(
+                $"{ApiEndpoint}/{id}",
+                jsonContent
+            );
+            //var jsonResponse = await response.Content.ReadFromJsonAsync<Exercise>();
+            return exercise;
+        }
     }
 }

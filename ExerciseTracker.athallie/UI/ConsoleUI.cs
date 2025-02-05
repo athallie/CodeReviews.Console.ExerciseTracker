@@ -49,6 +49,7 @@ namespace ExerciseTracker.athallie.UI
                     Add();
                     break;
                 case "edit":
+                    Update();
                     break;
                 case "delete":
                     Delete();
@@ -77,53 +78,7 @@ namespace ExerciseTracker.athallie.UI
 
         private async void Add()
         {
-            int columnAmount = 4;
-            string[] data = new string[columnAmount];
-            string[] prompts = { 
-                """
-                Date Format: MM/DD/YYYY
-                Example: 12/01/2022 -> (1 December 2022)
-                P.S.: The date also has to be valid for the month in that year!
-
-                Start Date:
-                """,
-                """"
-                Date Format: MM/DD/YYYY
-                Example: 12/01/2022 -> (1 December 2022)
-                P.S: The date also has to be valid for the month in that year!
-                
-                End Date:
-                """",
-                """
-                Duration Format: HH:MM:SS
-                Example: 01:30:25 (1 Hour, 30 Minutes, 25 Seconds)
-                P.S.: Hour must be around 0 - 24, Minutes & Second must be around 0 - 60 
-
-                Duration:
-                """,
-                "Comments (can be empty):"
-            };
-            string[] types = { 
-                "DateStart",
-                "DateEnd",
-                "Duration",
-                "Comments"
-            };
-
-            for (int i = 0; i < columnAmount; i++)
-            {
-                string input;
-                if (i == 1)
-                {
-                    input = _userInput.GetInput(prompts[i], types[i], DateTime.Parse(data[0]));
-                }
-                else
-                {
-                    input = _userInput.GetInput(prompts[i], types[i]);
-                }
-                data[i] = input;
-                Console.WriteLine();
-            }
+            string[] data = _userInput.GetAllInput();
 
             string response = await _httpUtils.AddExercise(
                 DateTime.Parse(data[0]),
@@ -137,8 +92,23 @@ namespace ExerciseTracker.athallie.UI
 
         private async void Delete()
         {
-            int id = _userInput.GetIDInput();
+            int id = _userInput.GetIDInput("ID of Item to be Deleted:");
             var response = await _httpUtils.DeleteExercise(id);
+            Console.WriteLine("\n" + response);
+        }
+
+        private async void Update()
+        {
+            int id = _userInput.GetIDInput("ID of Item to be Updated:");
+            string[] newData = _userInput.GetAllInput();
+            var response = await _httpUtils.UpdateExercise(id, new Exercise()
+            {
+                Id = id,
+                DateStart = DateTime.Parse(newData[0]),
+                DateEnd = DateTime.Parse(newData[1]),
+                Duration = TimeSpan.Parse(newData[2]),
+                Comments = newData[3]
+            });
             Console.WriteLine("\n" + response);
         }
     }

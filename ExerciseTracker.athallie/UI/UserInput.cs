@@ -6,6 +6,58 @@ namespace ExerciseTracker.athallie.UI
     public class UserInput : IUserInput
     {
         public UserInput() { }
+
+        public string[] GetAllInput()
+        {
+            int columnAmount = 4;
+            string[] data = new string[columnAmount];
+            string[] prompts = {
+                """
+                Date Format: MM/DD/YYYY
+                Example: 12/01/2022 -> (1 December 2022)
+                P.S.: The date also has to be valid for the month in that year!
+
+                Start Date:
+                """,
+                """"
+                Date Format: MM/DD/YYYY
+                Example: 12/01/2022 -> (1 December 2022)
+                P.S: The date also has to be valid for the month in that year!
+                
+                End Date:
+                """",
+                """
+                Duration Format: HH:MM:SS
+                Example: 01:30:25 (1 Hour, 30 Minutes, 25 Seconds)
+                P.S.: Hour must be around 0 - 24, Minutes & Second must be around 0 - 60 
+
+                Duration:
+                """,
+                "Comments (can be empty):"
+            };
+            string[] types = {
+                "DateStart",
+                "DateEnd",
+                "Duration",
+                "Comments"
+            };
+
+            for (int i = 0; i < columnAmount; i++)
+            {
+                string input;
+                if (i == 1)
+                {
+                    input = GetInput(prompts[i], types[i], DateTime.Parse(data[0]));
+                }
+                else
+                {
+                    input = GetInput(prompts[i], types[i]);
+                }
+                data[i] = input;
+            }
+
+            return data;
+        }
         public string GetInput(string prompt, string columnName, DateTime? startDate = null)
         {
             string input;
@@ -18,12 +70,12 @@ namespace ExerciseTracker.athallie.UI
             return input;
         }
 
-        public int GetIDInput()
+        public int GetIDInput(string prompt)
         {
             string input;
             while (true)
             {
-                input = GetInput("ID of Item To Be Deleted:");
+                input = GetInput(prompt);
                 var inputIsValid = ValidateInput(input);
                 if (inputIsValid) { break; }
             }
