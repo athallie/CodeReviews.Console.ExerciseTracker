@@ -41,7 +41,7 @@ namespace ExerciseTracker.athallie.UI
             switch (action.ToLower().Split()[0])
             {
                 case "all":
-                    ShowAll();
+                    await ShowAll(true);
                     break;
                 case "add":
                     Add();
@@ -68,7 +68,7 @@ namespace ExerciseTracker.athallie.UI
             ExecuteAction(action);
         }
 
-        private async void ShowAll()
+        private async Task ShowAll(bool showBackPrompt)
         {
             List<Exercise> data = (List<Exercise>) await _httpUtils.GetExercises();
             var table = new Table();
@@ -86,7 +86,10 @@ namespace ExerciseTracker.athallie.UI
                 );
             });
             AnsiConsole.Write(table);
-            GoBackOrStay();
+            if (showBackPrompt)
+            {
+                GoBackOrStay(false);
+            }
         }
 
         private async void Add()
@@ -103,7 +106,7 @@ namespace ExerciseTracker.athallie.UI
             Console.WriteLine("\n" + response);
         }
 
-        private void GoBackOrStay()
+        private void GoBackOrStay(bool repeatIfStay)
         {
             var prompt = new TextPrompt<bool>("Go Back?")
                 .AddChoice(true)
@@ -115,17 +118,53 @@ namespace ExerciseTracker.athallie.UI
                 var goBack = AnsiConsole.Prompt(prompt);
                 if (goBack)
                 {
+                    Run();
+                    break;
+                }
+                else if (repeatIfStay)
+                {
                     break;
                 }
             }
-            Run();
         }
 
         private async void Delete()
         {
-            int id = _userInput.GetIDInput("ID of Item to be Deleted:");
-            var response = await _httpUtils.DeleteExercise(id);
-            Console.WriteLine("\n" + response);
+            while (true)
+            {
+                await ShowAll(false);
+                int id = _userInput.GetIDInput("ID of Item to be Deleted (enter nothing to quit):");
+                if (id == -1)
+                {
+                    Run();
+                    break;
+                }
+
+                var response = await _httpUtils.DeleteExercise(id);
+                if (response == true)
+                {
+                    AnsiConsole.MarkupLine($"\n[green]Delete success![/]");
+                }
+                else
+                {
+                    AnsiConsole.MarkupLine($"\n[red]Delete unsuccesful, please try again.[/]");
+                }
+
+                AnsiConsole.WriteLine();
+
+                var deleteMore = AnsiConsole.Prompt(
+                    new TextPrompt<bool>("Delete another record?")
+                    .AddChoice(true)
+                    .AddChoice(false)
+                    .WithConverter(choice => choice ? "y" : "n")
+                );
+
+                if (deleteMore == false)
+                {
+                    Run();
+                    break;
+                } else { AnsiConsole.WriteLine(); continue; }
+            }
         }
 
         private async void Update()

@@ -59,7 +59,9 @@ namespace ExerciseTracker.athallie.Repositories
         {
             try
             {
+                using var transaction = await Context.Database.BeginTransactionAsync();
                 await Context.Exercises.Where(e => e.Id == id).ExecuteDeleteAsync();
+                await transaction.CommitAsync();
             } catch (Exception ex)
             {
                 throw new Exception($"Couldn't delete element: {ex.Message}");

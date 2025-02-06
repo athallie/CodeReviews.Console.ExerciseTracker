@@ -1,4 +1,5 @@
 ﻿using System.Text.RegularExpressions;
+using Microsoft.IdentityModel.Tokens;
 using Spectre.Console;
 
 namespace ExerciseTracker.athallie.UI
@@ -53,6 +54,12 @@ namespace ExerciseTracker.athallie.UI
                 {
                     input = GetInput(prompts[i], types[i]);
                 }
+
+                if (input.IsNullOrEmpty())
+                {
+                    return new[] {"quit"};
+                }
+
                 data[i] = input;
             }
 
@@ -64,6 +71,15 @@ namespace ExerciseTracker.athallie.UI
             while (true)
             {
                 input = GetInput(prompt);
+
+                if (input.IsNullOrEmpty())
+                {
+                    return "quit";
+                }
+                {
+                    
+                }
+
                 var inputIsValid = ValidateInput(input, columnName, startDate);
                 if (inputIsValid) { break; }
             }
@@ -76,6 +92,12 @@ namespace ExerciseTracker.athallie.UI
             while (true)
             {
                 input = GetInput(prompt);
+
+                if (input.IsNullOrEmpty())
+                {
+                    return -1;
+                }
+
                 var inputIsValid = ValidateInput(input);
                 if (inputIsValid) { break; }
             }
@@ -86,6 +108,7 @@ namespace ExerciseTracker.athallie.UI
         {
             return AnsiConsole.Prompt(
                     new TextPrompt<string>(prompt)
+                    .AllowEmpty()
             );
         }
         

@@ -55,11 +55,10 @@ namespace ExerciseTracker.athallie.Utils
             throw new Exception("API endpoint has not been set.");
         }
 
-        public async Task<string> DeleteExercise(int id)
+        public async Task<bool> DeleteExercise(int id)
         {
             using HttpResponseMessage response = await _httpClient.DeleteAsync($"{ApiEndpoint}/{id}");
-            string jsonResponse = await response.Content.ReadAsStringAsync();
-            return jsonResponse;
+            return response.IsSuccessStatusCode;
         }
 
         public async Task<Exercise?> UpdateExercise(int id, Exercise exercise)
