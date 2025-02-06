@@ -94,16 +94,49 @@ namespace ExerciseTracker.athallie.UI
 
         private async void Add()
         {
-            string[] data = _userInput.GetAllInput();
+            while (true)
+            {
+                string[] data = _userInput.GetAllInput();
 
-            string response = await _httpUtils.AddExercise(
-                DateTime.Parse(data[0]),
-                DateTime.Parse(data[1]),
-                TimeSpan.Parse(data[2]),
-                data[3]
-            );
+                if (data[0].Equals("quit"))
+                {
+                    Run();
+                    break;
+                }
 
-            Console.WriteLine("\n" + response);
+                bool response = await _httpUtils.AddExercise(
+                    DateTime.Parse(data[0]),
+                    DateTime.Parse(data[1]),
+                    TimeSpan.Parse(data[2]),
+                    data[3]
+                );
+
+                if (response == true)
+                {
+                    AnsiConsole.MarkupLine($"\n[green]Record added![/]");
+                } else 
+                {
+                    AnsiConsole.MarkupLine($"[red]Error adding record. Please try again.[/]");    
+                }
+
+                AnsiConsole.WriteLine();
+
+                bool addMore = AnsiConsole.Prompt(
+                    new TextPrompt<bool>("Add another record?")
+                    .AddChoice(true)
+                    .AddChoice(false)
+                    .WithConverter(choice => choice ? "y" : "n")
+                );
+
+                if (addMore == false)
+                {
+                    Run();
+                    break;
+                } else
+                {
+                    AnsiConsole.WriteLine();
+                }
+            }
         }
 
         private void GoBackOrStay(bool repeatIfStay)

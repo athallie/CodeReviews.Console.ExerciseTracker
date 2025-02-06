@@ -29,7 +29,7 @@ namespace ExerciseTracker.athallie.Utils
 
             throw new Exception("API endpoint has not been set.");
         }
-        public async Task<string> AddExercise(DateTime dateStart, DateTime dateEnd, TimeSpan duration, string? comments)
+        public async Task<bool> AddExercise(DateTime dateStart, DateTime dateEnd, TimeSpan duration, string? comments)
         {
             if (ApiEndpoint != null)
             {
@@ -48,8 +48,7 @@ namespace ExerciseTracker.athallie.Utils
                 using HttpResponseMessage response = await
                     _httpClient.PostAsync(ApiEndpoint, jsonContent);
 
-                var jsonResponse = await response.Content.ReadAsStringAsync();
-                return jsonResponse;
+                return response.IsSuccessStatusCode;
             }
 
             throw new Exception("API endpoint has not been set.");

@@ -18,23 +18,25 @@ namespace ExerciseTracker.athallie.UI
                 Example: 12/01/2022 -> (1 December 2022)
                 P.S.: The date also has to be valid for the month in that year!
 
-                Start Date:
+                Start Date (enter nothing to quit):
                 """,
                 """"
                 Date Format: MM/DD/YYYY
                 Example: 12/01/2022 -> (1 December 2022)
                 P.S: The date also has to be valid for the month in that year!
                 
-                End Date:
+                End Date (enter nothing to quit):
                 """",
                 """
                 Duration Format: HH:MM:SS
                 Example: 01:30:25 (1 Hour, 30 Minutes, 25 Seconds)
                 P.S.: Hour must be around 0 - 24, Minutes & Second must be around 0 - 60 
 
-                Duration:
+                Duration (enter nothing to quit):
                 """,
-                "Comments (can be empty):"
+                """
+                Comments (can be empty):
+                """
             };
             string[] types = {
                 "DateStart",
@@ -46,7 +48,7 @@ namespace ExerciseTracker.athallie.UI
             for (int i = 0; i < columnAmount; i++)
             {
                 string input;
-                if (i == 1)
+                if (i == 1 && data[0] != "quit")
                 {
                     input = GetInput(prompts[i], types[i], DateTime.Parse(data[0]));
                 }
@@ -54,11 +56,12 @@ namespace ExerciseTracker.athallie.UI
                 {
                     input = GetInput(prompts[i], types[i]);
                 }
-
-                if (input.IsNullOrEmpty())
+                if (input == "quit")
                 {
-                    return new[] {"quit"};
+                    return new[] { "quit" };
                 }
+
+                AnsiConsole.WriteLine();
 
                 data[i] = input;
             }
@@ -75,9 +78,6 @@ namespace ExerciseTracker.athallie.UI
                 if (input.IsNullOrEmpty())
                 {
                     return "quit";
-                }
-                {
-                    
                 }
 
                 var inputIsValid = ValidateInput(input, columnName, startDate);
