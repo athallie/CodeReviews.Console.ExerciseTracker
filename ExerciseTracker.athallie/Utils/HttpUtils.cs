@@ -60,7 +60,7 @@ namespace ExerciseTracker.athallie.Utils
             return response.IsSuccessStatusCode;
         }
 
-        public async Task<Exercise?> UpdateExercise(int id, Exercise exercise)
+        public async Task<bool> UpdateExercise(int id, Exercise exercise)
         {
             using StringContent jsonContent = new(
                 JsonSerializer.Serialize(exercise),
@@ -71,8 +71,7 @@ namespace ExerciseTracker.athallie.Utils
                 $"{ApiEndpoint}/{id}",
                 jsonContent
             );
-            //var jsonResponse = await response.Content.ReadFromJsonAsync<Exercise>();
-            return exercise;
+            return response.IsSuccessStatusCode;
         }
     }
 }

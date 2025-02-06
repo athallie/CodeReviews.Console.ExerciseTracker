@@ -101,6 +101,7 @@ namespace ExerciseTracker.athallie.UI
                 var inputIsValid = ValidateInput(input);
                 if (inputIsValid) { break; }
             }
+            AnsiConsole.WriteLine();
             return Int32.Parse(input);
         }
             
