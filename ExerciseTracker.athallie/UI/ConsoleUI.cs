@@ -177,7 +177,7 @@ namespace ExerciseTracker.athallie.UI
             while(true)
             {
                 await ShowAllRecords(false);
-                int id = _userInput.GetIDInput("ID of Item to be Updated:");
+                int id = _userInput.GetIDInput("ID of Item to be Updated (enter nothing to quit):");
 
                 if (id == -1) { Run(); break; }
 
