@@ -1,5 +1,6 @@
 ﻿using ExerciseTracker.athallie.Model;
 using ExerciseTracker.athallie.Utils;
+using Microsoft.Identity.Client;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.Blazor;
 using Spectre.Console;
@@ -41,16 +42,16 @@ namespace ExerciseTracker.athallie.UI
             switch (action.ToLower().Split()[0])
             {
                 case "all":
-                    await ShowAll(true);
+                    await ShowAllRecords(true);
                     break;
                 case "add":
-                    Add();
+                    AddRecord();
                     break;
                 case "edit":
-                    Update();
+                    UpdateRecord();
                     break;
                 case "delete":
-                    Delete();
+                    DeleteRecord();
                     break;
             }
         }
@@ -68,7 +69,7 @@ namespace ExerciseTracker.athallie.UI
             ExecuteAction(action);
         }
 
-        private async Task ShowAll(bool showBackPrompt)
+        private async Task ShowAllRecords(bool showBackPrompt)
         {
             List<Exercise> data = (List<Exercise>) await _httpUtils.GetExercises();
             var table = new Table();
@@ -89,11 +90,19 @@ namespace ExerciseTracker.athallie.UI
             AnsiConsole.WriteLine();
             if (showBackPrompt)
             {
-                GoBackOrStay(false);
+                while (true)
+                {
+                    var goBack = AskNextAction("Go back?");
+                    if (goBack)
+                    {
+                        Run();
+                        break;
+                    }
+                }
             }
         }
 
-        private async void Add()
+        private async void AddRecord()
         {
             while (true)
             {
@@ -112,22 +121,14 @@ namespace ExerciseTracker.athallie.UI
                     data[3]
                 );
 
-                if (response == true)
-                {
-                    AnsiConsole.MarkupLine($"\n[green]Record added![/]");
-                } else 
-                {
-                    AnsiConsole.MarkupLine($"[red]Error adding record. Please try again.[/]");    
-                }
+                ShowResponse(
+                    response, "Record added!",
+                    "Error adding record. Please try again。"
+                );
 
                 AnsiConsole.WriteLine();
 
-                bool addMore = AnsiConsole.Prompt(
-                    new TextPrompt<bool>("Add another record?")
-                    .AddChoice(true)
-                    .AddChoice(false)
-                    .WithConverter(choice => choice ? "y" : "n")
-                );
+                bool addMore = AskNextAction("Add another record?");
 
                 if (addMore == false)
                 {
@@ -140,33 +141,11 @@ namespace ExerciseTracker.athallie.UI
             }
         }
 
-        private void GoBackOrStay(bool repeatIfStay)
-        {
-            var prompt = new TextPrompt<bool>("Go Back?")
-                .AddChoice(true)
-                .AddChoice(false)
-                .DefaultValue(true)
-                .WithConverter(choice => choice ? "y" : "n");
-            while (true)
-            {
-                var goBack = AnsiConsole.Prompt(prompt);
-                if (goBack)
-                {
-                    Run();
-                    break;
-                }
-                else if (repeatIfStay)
-                {
-                    break;
-                }
-            }
-        }
-
-        private async void Delete()
+        private async void DeleteRecord()
         {
             while (true)
             {
-                await ShowAll(false);
+                await ShowAllRecords(false);
                 int id = _userInput.GetIDInput("ID of Item to be Deleted (enter nothing to quit):");
                 if (id == -1)
                 {
@@ -175,23 +154,15 @@ namespace ExerciseTracker.athallie.UI
                 }
 
                 var response = await _httpUtils.DeleteExercise(id);
-                if (response == true)
-                {
-                    AnsiConsole.MarkupLine($"\n[green]Delete success![/]");
-                }
-                else
-                {
-                    AnsiConsole.MarkupLine($"\n[red]Delete unsuccesful, please try again.[/]");
-                }
+
+                ShowResponse(
+                    response, "Delete success!",
+                    "Delete failed, please try again."
+                );
 
                 AnsiConsole.WriteLine();
 
-                var deleteMore = AnsiConsole.Prompt(
-                    new TextPrompt<bool>("Delete another record?")
-                    .AddChoice(true)
-                    .AddChoice(false)
-                    .WithConverter(choice => choice ? "y" : "n")
-                );
+                var deleteMore = AskNextAction("Delete another record?");
 
                 if (deleteMore == false)
                 {
@@ -201,11 +172,11 @@ namespace ExerciseTracker.athallie.UI
             }
         }
 
-        private async void Update()
+        private async void UpdateRecord()
         {
             while(true)
             {
-                await ShowAll(false);
+                await ShowAllRecords(false);
                 int id = _userInput.GetIDInput("ID of Item to be Updated:");
 
                 if (id == -1) { Run(); break; }
@@ -223,24 +194,40 @@ namespace ExerciseTracker.athallie.UI
                     Comments = newData[3]
                 });
 
-                if (response == true)
-                {
-                   AnsiConsole.MarkupLine($"[green]Record updated![/]");
-                } else
-                {
-                    AnsiConsole.MarkupLine($"[red]Error updating the record. Please try again[/]");
-                }
-
-                var updateMore = AnsiConsole.Prompt(
-                    new TextPrompt<bool>("Update another record?")
-                    .AddChoice(true)
-                    .AddChoice(false)
-                    .WithConverter(choice => choice ? "y" : "n")
+                ShowResponse(
+                    response, "Record updated!",
+                    "Error updating the record. Please try again."
                 );
+
+                var updateMore = AskNextAction("Update another record?");
 
                 if (updateMore == false) { Run(); break; }
                 else { AnsiConsole.WriteLine(); }
             }
+        }
+
+        private bool AskNextAction(string prompt)
+        {
+            return AnsiConsole.Prompt(
+                new TextPrompt<bool>(prompt)
+                .AddChoice(true)
+                .AddChoice(false)
+                .DefaultValue(true)
+                .WithConverter(choice => choice ? "y" : "n")
+            );
+        }
+
+        private void ShowResponse(bool response, string successMessage, string failedMessage)
+        {
+            if (response == true)
+            {
+                AnsiConsole.MarkupLine($"[green]{successMessage}[/]");
+            }
+            else
+            {
+                AnsiConsole.MarkupLine($"[red]{failedMessage}[/]");
+            }
+            AnsiConsole.WriteLine();
         }
     }
 }
