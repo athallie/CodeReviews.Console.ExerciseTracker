@@ -5,6 +5,6 @@
         void Run();
         string ShowMenuAndGetChosenAction();
         void ExecuteAction(string action);
-        void GetTitle();
+        void ShowTitle();
     }
 }

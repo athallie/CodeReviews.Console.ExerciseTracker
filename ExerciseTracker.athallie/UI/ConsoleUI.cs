@@ -30,12 +30,11 @@ namespace ExerciseTracker.athallie.UI
             return action;
         }
 
-        public void GetTitle()
+        public void ShowTitle()
         {
             AnsiConsole.Clear();
             string title = "Exercise Tracker";
             AnsiConsole.MarkupLine($"[bold yellow]{title}[/]");
-            AnsiConsole.MarkupLine("-".PadLeft(title.Length));
         }
 
         public async void ExecuteAction(string action)
@@ -59,7 +58,7 @@ namespace ExerciseTracker.athallie.UI
 
         public void Run()
         {
-            GetTitle();
+            ShowTitle();
             string action;
             while(true)
             {
@@ -72,8 +71,31 @@ namespace ExerciseTracker.athallie.UI
         private async void ShowAll()
         {
             List<Exercise> data = (List<Exercise>) await _httpUtils.GetExercises();
-            GetTitle();
-            data.ForEach(e => Console.WriteLine(e.Comments));
+            ShowTitle();
+            var table = new Table();
+            table.AddColumns(
+                "ID", "Start Date", "End Date", "Duration", "Comments"    
+            );
+            data.ForEach(e =>
+            {
+                table.AddRow(
+                    $"[green]{e.Id}[/]",
+                    $"{e.DateStart.ToShortDateString()}",
+                    $"{e.DateEnd.ToShortDateString()}",
+                    $"{e.Duration.ToString()}",
+                    $"{e.Comments}"
+                );
+            });
+            AnsiConsole.Write(table);
+            while(true)
+            {
+                var goBack = AskToGoBack();
+                if (goBack)
+                {
+                    break;
+                }
+            }
+            Run();
         }
 
         private async void Add()
@@ -88,6 +110,16 @@ namespace ExerciseTracker.athallie.UI
             );
 
             Console.WriteLine("\n" + response);
+        }
+
+        private bool AskToGoBack()
+        {
+            var prompt = new TextPrompt<bool>("Go Back?")
+                .AddChoice(true)
+                .AddChoice(false)
+                .DefaultValue(true)
+                .WithConverter(choice => choice ? "y" : "n");
+            return AnsiConsole.Prompt(prompt);
         }
 
         private async void Delete()
