@@ -126,8 +126,6 @@ namespace ExerciseTracker.athallie.UI
                     "Error adding record. Please try again。"
                 );
 
-                AnsiConsole.WriteLine();
-
                 bool addMore = AskNextAction("Add another record?");
 
                 if (addMore == false)
@@ -159,8 +157,6 @@ namespace ExerciseTracker.athallie.UI
                     response, "Delete success!",
                     "Delete failed, please try again."
                 );
-
-                AnsiConsole.WriteLine();
 
                 var deleteMore = AskNextAction("Delete another record?");
 
