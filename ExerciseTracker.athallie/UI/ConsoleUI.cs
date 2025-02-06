@@ -32,7 +32,6 @@ namespace ExerciseTracker.athallie.UI
 
         public void ShowTitle()
         {
-            AnsiConsole.Clear();
             string title = "Exercise Tracker";
             AnsiConsole.MarkupLine($"[bold yellow]{title}[/]");
         }
@@ -58,6 +57,7 @@ namespace ExerciseTracker.athallie.UI
 
         public void Run()
         {
+            AnsiConsole.Clear();
             ShowTitle();
             string action;
             while(true)
@@ -71,7 +71,6 @@ namespace ExerciseTracker.athallie.UI
         private async void ShowAll()
         {
             List<Exercise> data = (List<Exercise>) await _httpUtils.GetExercises();
-            ShowTitle();
             var table = new Table();
             table.AddColumns(
                 "ID", "Start Date", "End Date", "Duration", "Comments"    
@@ -87,15 +86,7 @@ namespace ExerciseTracker.athallie.UI
                 );
             });
             AnsiConsole.Write(table);
-            while(true)
-            {
-                var goBack = AskToGoBack();
-                if (goBack)
-                {
-                    break;
-                }
-            }
-            Run();
+            GoBackOrStay();
         }
 
         private async void Add()
@@ -112,14 +103,22 @@ namespace ExerciseTracker.athallie.UI
             Console.WriteLine("\n" + response);
         }
 
-        private bool AskToGoBack()
+        private void GoBackOrStay()
         {
             var prompt = new TextPrompt<bool>("Go Back?")
                 .AddChoice(true)
                 .AddChoice(false)
                 .DefaultValue(true)
                 .WithConverter(choice => choice ? "y" : "n");
-            return AnsiConsole.Prompt(prompt);
+            while (true)
+            {
+                var goBack = AnsiConsole.Prompt(prompt);
+                if (goBack)
+                {
+                    break;
+                }
+            }
+            Run();
         }
 
         private async void Delete()

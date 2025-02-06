@@ -21,6 +21,11 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Logging.ClearProviders();
+builder.Logging
+    .AddDebug()
+    .AddEventSourceLogger();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
