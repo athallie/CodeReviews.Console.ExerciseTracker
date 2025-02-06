@@ -22,8 +22,8 @@ namespace ExerciseTracker.athallie.Utils
         {
             if (ApiEndpoint != null)
             {
-                var stream = await _httpClient.GetStreamAsync(ApiEndpoint);
-                List<Exercise> data = await JsonSerializer.DeserializeAsync<List<Exercise>>(stream);
+                await using Stream stream = await _httpClient.GetStreamAsync(ApiEndpoint);
+                var data = await JsonSerializer.DeserializeAsync<List<Exercise>>(stream);
                 return data ?? new();
             }
 

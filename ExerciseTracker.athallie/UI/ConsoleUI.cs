@@ -73,7 +73,7 @@ namespace ExerciseTracker.athallie.UI
         {
             List<Exercise> data = (List<Exercise>) await _httpUtils.GetExercises();
             GetTitle();
-            data.ForEach(e => Console.WriteLine(e.DateStart));
+            data.ForEach(e => Console.WriteLine(e.Comments));
         }
 
         private async void Add()
